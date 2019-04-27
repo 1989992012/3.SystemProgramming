@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <pwd.h>
+#include <signal.h>
 
 #define BUF_SZ 256
 #define TRUE 1
@@ -58,6 +59,7 @@ int callCommandWithRedi(int left, int right);
 int callCd(int commandNum);
 
 int main() {
+    signal(SIGINT, SIG_IGN);
 	/* 获取当前工作目录、用户名、主机名 */
 	int result = getCurWorkDir();
 	if (ERROR_SYSTEM == result) {
@@ -70,7 +72,7 @@ int main() {
 	/* 启动myshell */
 	char argv[BUF_SZ];
 	while (TRUE) {
-		printf("\e[32;1m%s@%s:%s\e[0m$ ", username, hostname,curPath); // 显示为绿色
+        printf("\e[32;1m%s@%s:%s\e[0m$ ", username, hostname,curPath); // 显示为绿色
 		/* 获取用户输入的命令 */
 		fgets(argv, BUF_SZ, stdin);
 		int len = strlen(argv);
