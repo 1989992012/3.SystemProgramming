@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <pwd.h>
 #include <signal.h>
+#include <sys/ioctl.h>
 
 #define BUF_SZ 256
 #define TRUE 1
@@ -58,7 +59,7 @@ int callCommandWithPipe(int left, int right);
 int callCommandWithRedi(int left, int right);
 int callCd(int commandNum);
 
-int main() {
+int main(void) {
     signal(SIGINT, SIG_IGN);
 	/* 获取当前工作目录、用户名、主机名 */
 	int result = getCurWorkDir();
@@ -143,6 +144,15 @@ int main() {
 			}
 		}
 	}
+	struct winsize size;
+	if (isatty(STDOUT_FILENO) == 0)
+ 	exit(1);
+ 	if (ioctl(STDOUT_FILENO, TIOCGWINSZ,&size) < 0) {
+		perror("ioctl TIOCGWINSZ error");
+		exit(1);
+ 	}     
+	printf("%d rows, %d columns\n", size.ws_row, size.ws_col);
+	return 0;
 }
 
 int isCommandExist(const char* command) { // 判断指令是否存在
